@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediCore - Medical Management System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Auth Screen -->
+  <div id="auth-screen">
+    <!-- Floating Elements -->
+    <div style="position: absolute; top: 20%; left: 10%; width: 60px; height: 60px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; animation: float 6s ease-in-out infinite;"></div>
+    <div style="position: absolute; top: 70%; right: 15%; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: float 8s ease-in-out infinite 1s;"></div>
+    <div style="position: absolute; top: 40%; right: 10%; width: 20px; height: 20px; background: rgba(255,255,255,0.3); border-radius: 50%; animation: float 4s ease-in-out infinite 2s;"></div>
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>🏥 MediCore</h1>
+        <p>Advanced Medical Management System</p>
+        <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1rem;">
+          <div style="width: 10px; height: 10px; background: #667eea; border-radius: 50%; animation: pulse 2s infinite;"></div>
+          <div style="width: 10px; height: 10px; background: #764ba2; border-radius: 50%; animation: pulse 2s infinite 0.5s;"></div>
+          <div style="width: 10px; height: 10px; background: #667eea; border-radius: 50%; animation: pulse 2s infinite 1s;"></div>
+        </div>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+      </div>
+      
+      <!-- Login Form -->
+      <div id="login-form">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" placeholder="doctor@clinic.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+        <p style="text-align: center; margin-top: 1rem; color: #7f8c8d; font-size: 0.9rem;">
+          Use doctor@clinic.com or receptionist@clinic.com for demo
+        </p>
+      </div>
+      
+      <!-- Register Form -->
+      <div id="register-form" style="display: none;">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="reg-name" placeholder="Dr. Sarah Ahmed">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="reg-email" placeholder="sarah@clinic.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Minimum 6 characters">
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="reg-role">
+            <option value="patient">Patient</option>
+            <option value="doctor">Doctor</option>
+            <option value="receptionist">Receptionist</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="doRegister()">Create Account</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main App -->
+  <div id="app" style="display: none;">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <h2>🏥 MediCore</h2>
+        </div>
+      </div>
+      
+      <div style="padding: 0 1rem 1rem; border-bottom: 1px solid #34495e; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="width: 40px; height: 40px; background: #3498db; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+            A
+          </div>
+          <div>
+            <div id="sidebar-name">User</div>
+            <div id="sidebar-role" style="font-size: 0.8rem; color: #bdc3c7;">Role</div>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      
+      <div style="padding: 1rem;">
+        <button class="nav-item" style="color: #e74c3c; width: 100%;" onclick="doLogout()">
+          <svg class="heroicon" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="top-bar">
+        <div class="page-title" id="page-title">Dashboard</div>
+        <div>
+          <span>Welcome, <strong id="user-greeting">User</strong></span>
+        </div>
+      </div>
+      
+      <div class="content-area" id="content-area">
+        <!-- Dynamic content will be rendered here -->
+      </div>
+    </main>
+  </div>
+  
+  <!-- Modals -->
+  
+  <!-- Add Patient Modal -->
+  <div class="modal-overlay" id="modal-patient">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Add Patient</span>
+        <button class="modal-close" onclick="closeModal('modal-patient')">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="patient-form">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="p-name" placeholder="John Doe">
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Age *</label>
+              <input type="number" id="p-age" placeholder="35">
+            </div>
+            <div class="form-group">
+              <label>Gender *</label>
+              <select id="p-gender">
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Contact *</label>
+            <input type="tel" id="p-contact" placeholder="+92 300 1234567">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="p-address" placeholder="123 Main Street">
+          </div>
+          <div class="form-group">
+            <label>Blood Group</label>
+            <select id="p-blood">
+              <option value="">Unknown</option>
+              <option>A+</option>
+              <option>A-</option>
+              <option>B+</option>
+              <option>B-</option>
+              <option>AB+</option>
+              <option>AB-</option>
+              <option>O+</option>
+              <option>O-</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-patient')">Cancel</button>
+        <button class="btn btn-primary" onclick="savePatient()">Save Patient</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Book Appointment Modal -->
+  <div class="modal-overlay" id="modal-appointment">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Book Appointment</span>
+        <button class="modal-close" onclick="closeModal('modal-appointment')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Patient *</label>
+          <select id="appt-patient"></select>
+        </div>
+        <div class="form-group">
+          <label>Doctor *</label>
+          <select id="appt-doctor"></select>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" id="appt-date">
+          </div>
+          <div class="form-group">
+            <label>Time *</label>
+            <input type="time" id="appt-time">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="appt-notes" placeholder="Reason for visit..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-appointment')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAppointment()">Book Appointment</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Prescription Modal -->
+  <div class="modal-overlay" id="modal-prescription">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">New Prescription</span>
+        <button class="modal-close" onclick="closeModal('modal-prescription')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Patient *</label>
+          <select id="rx-patient"></select>
+        </div>
+        <div class="form-group">
+          <label>Diagnosis *</label>
+          <input type="text" id="rx-diagnosis" placeholder="e.g. Hypertension">
+        </div>
+        <div class="form-group">
+          <label>Medicines</label>
+          <textarea id="rx-medicines" placeholder="List medicines and dosages..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Doctor's Notes</label>
+          <textarea id="rx-notes" placeholder="Instructions and follow-up..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-prescription')">Cancel</button>
+        <button class="btn btn-primary" onclick="savePrescription()">Create Prescription</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Patient Profile Modal -->
+  <div class="modal-overlay" id="modal-profile">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Patient Profile</span>
+        <button class="modal-close" onclick="closeModal('modal-profile')">×</button>
+      </div>
+      <div id="profile-content"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-profile')">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+</html>
